@@ -1,0 +1,258 @@
+/* ========= 页面基础布局 ========= */
+body {
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #f4f6f9;
+  color: #333;
+  padding: 30px;
+  max-width: 900px;
+  margin: auto;
+}
+
+h1, h2, h3 {
+  text-align: center;
+  color: #0066cc;
+  margin-bottom: 20px;
+}
+
+section {
+  margin-bottom: 30px;
+  background: #fff;
+  padding: 20px;
+  border-left: 4px solid #0066cc;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* ========= 统一表单与交互组件 ========= */
+label {
+  font-weight: bold;
+  margin-top: 15px;
+  display: block;
+}
+
+input, select, textarea, button {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #007BFF;
+  box-shadow: 0 0 5px rgba(0,123,255,0.3);
+}
+
+/* 针对上传区的样式 */
+input[type="password"], input[type="file"], button {
+  width: auto;
+  display: inline-block;
+  margin: 10px 10px 10px 0;
+  padding: 10px 15px;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+/* ========= 按钮统一风格 ========= */
+button {
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.4);
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* 工具跳转按钮（.tool） */
+.tool {
+  text-decoration: none;
+  display: inline-block;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 280px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  margin: 0 auto;
+}
+
+.tool:hover {
+  background-color: #45a049;
+}
+
+/* ========= 内容与容器 ========= */
+#content {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 200px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  width: 100%;
+  overflow-wrap: break-word;
+}
+
+#content * {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  background: white;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.toolbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ========= 富文本编辑器样式 ========= */
+.editor {
+  border: 1px solid #ccc;
+  padding: 10px;
+  min-height: 150px;
+  background: #fcfcfc;
+  border-radius: 5px;
+  overflow-wrap: break-word;
+}
+
+.editor img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ========= 状态提示区域 ========= */
+#status {
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* ========= 上传区域区块 ========= */
+#uploadSection {
+  background: #eef5ff;
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 20px;
+}
+
+/* ========= 通用隐藏类 ========= */
+.hidden {
+  display: none;
+}
+
+/* 聊天窗口整体布局 */
+#chat {
+  max-width: 700px;
+  margin: 50px auto;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 聊天标题栏 */
+#chat h2 {
+  background-color: #007BFF;
+  color: white;
+  margin: 0;
+  padding: 16px;
+  font-size: 1.5em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 聊天内容窗口 */
+#chat-window {
+  padding: 20px;
+  height: 400px;
+  overflow-y: auto;
+  border-bottom: 1px solid #eee;
+}
+
+/* 消息气泡基础样式 */
+.msg {
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin: 8px 0;
+  max-width: 80%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.5;
+}
+
+/* 用户消息（右侧绿色气泡） */
+.msg.user {
+  background: #d1f2eb;
+  align-self: flex-end;
+  text-align: right;
+}
+
+/* 机器人消息（左侧灰色气泡） */
+.msg.bot {
+  background: #f4f6f9;
+  align-self: flex-start;
+}
+
+/* 聊天输入区域 */
+#input-area {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+/* 输入框 */
+#user-input {
+  resize: none;
+  height: 60px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+/* 发送按钮 */
+#send-button {
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#send-button:hover {
+  background-color: #0056b3;
+}
+
+/* 加载提示 */
+.loading {
+  font-style: italic;
+  color: #888;
+  margin: 10px 0;
+}

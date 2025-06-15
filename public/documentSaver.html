@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>课程文件下载</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html">⬅️ 返回首页</a>
+    <h2>📘 文件下载</h2>
+
+    <h3>📝 实验报告模板：</h3>
+    <ul id="reportTemplates"></ul>
+
+    <h3>📎 补充材料：</h3>
+    <ul id="supplementaryMaterials"></ul>
+  </div>
+
+  <script>
+    async function loadFileList() {
+      const res = await fetch('/file-list');
+      const data = await res.json();
+
+      const reportList = document.getElementById('reportTemplates');
+      const supplementList = document.getElementById('supplementaryMaterials');
+
+      reportList.innerHTML = '';
+      supplementList.innerHTML = '';
+
+      data.reportTemplates.forEach(file => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = `/download/reportTemplates/${encodeURIComponent(file)}`;
+        link.innerText = file;
+        link.download = file;
+        li.appendChild(link);
+        reportList.appendChild(li);
+      });
+
+      data.supplementaryMaterials.forEach(file => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = `/download/supplementaryMaterials/${encodeURIComponent(file)}`;
+        link.innerText = file;
+        link.download = file;
+        li.appendChild(link);
+        supplementList.appendChild(li);
+      });
+    }
+
+    loadFileList();
+  </script>
+</body>
+</html>

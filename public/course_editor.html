@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>实验课程安排</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a href="index.html">⬅️ 返回首页</a>
+  <h1>实验课程安排编辑器</h1>
+  <form id="courseForm">
+    <div id="printArea">
+      <section><h3>教学目的</h3><div id="目的" class="editor" contenteditable="true"></div></section>
+      <section><h3>内容安排</h3><div id="内容" class="editor" contenteditable="true"></div></section>
+      <section><h3>教室安排</h3><div id="教室" class="editor" contenteditable="true"></div></section>
+      <section><h3>教师安排</h3><div id="教师" class="editor" contenteditable="true"></div></section>
+      <section><h3>考核方案</h3><div id="考核" class="editor" contenteditable="true"></div></section>
+      <section><h3>课程资源</h3><div id="资源" class="editor" contenteditable="true"></div></section>
+      <section><h3>实验报告要求</h3><div id="报告" class="editor" contenteditable="true"></div></section>
+      <section><h3>实验室要求</h3><div id="实验室" class="editor" contenteditable="true"></div></section>
+      <section><h3>注意事项</h3><div id="注意" class="editor" contenteditable="true"></div></section>
+      <section><h3>补充</h3><div id="补充" class="editor" contenteditable="true"></div></section>
+    </div>
+
+    <button type="button" onclick="saveDraft()">💾 保存草稿</button>
+    <button type="button" onclick="generateAndUploadPDF()">🖨️ 生成 PDF 并自动上传</button>
+  </form>
+
+  <div id="uploadSection">
+    <hr />
+    <h3>备用上传入口</h3>
+    <input type="file" id="pdfFile" accept="application/pdf" />
+    <button onclick="uploadPrintedPDF()">📤 上传已保存的 PDF 文件</button>
+  </div>
+
+  <script>
+    const sections = ["目的", "内容", "教室", "教师", "考核", "资源", "报告", "实验室", "注意", "补充"];
+
+    function saveDraft() {
+      const draft = {};
+      sections.forEach(id => {
+        draft[id] = document.getElementById(id).innerHTML;
+      });
+      localStorage.setItem("draft", JSON.stringify(draft));
+      alert("✅ 草稿已保存");
+    }
+
+    function loadDraft() {
+      const draft = JSON.parse(localStorage.getItem("draft") || "{}");
+      sections.forEach(id => {
+        if (draft[id]) document.getElementById(id).innerHTML = draft[id];
+      });
+    }
+
+    async function generateAndUploadPDF() {
+      const element = document.getElementById("printArea");
+      const opt = {
+        margin: 0,
+        filename: '课程安排.pdf',
+        html2canvas: { scale: 1.5, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      // 克隆节点以保证生成 PDF 时不会影响界面
+      const clone = element.cloneNode(true);
+      clone.style.width = "800px";
+      document.body.appendChild(clone);
+
+      const pdfBlob = await html2pdf().from(clone).set(opt).outputPdf("blob");
+      document.body.removeChild(clone);
+
+      const formData = new FormData();
+      formData.append("file", new File([pdfBlob], "课程安排.pdf", { type: "application/pdf" }));
+
+      const response = await fetch("/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      if (response.ok) {
+        const shouldDownload = window.confirm("✅ PDF 已上传成功！是否立即下载一份备份？");
+        if (shouldDownload) {
+          const downloadLink = document.createElement("a");
+          downloadLink.href = URL.createObjectURL(pdfBlob);
+          downloadLink.download = "课程安排.pdf";
+          downloadLink.click();
+        }
+      } else {
+        const msg = await response.json();
+        alert("❌ 上传失败：" + msg.message);
+      }
+    }
+
+    async function uploadPrintedPDF() {
+      const fileInput = document.getElementById("pdfFile");
+
+      if (!fileInput.files.length) {
+        alert("⚠️ 请先选择要上传的 PDF 文件");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      const response = await fetch("/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      if (response.ok) {
+        alert("✅ PDF 已自动生成并成功上传！");
+      } else {
+        const msg = await response.json();
+        alert("❌ 上传失败：" + msg.message);
+      }
+    }
+
+    window.onload = loadDraft;
+  </script>
+</body>
+</html>

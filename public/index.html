@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>综合工具箱</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('images/background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: "微软雅黑", sans-serif;
+      color: #fff;
+      text-shadow: 1px 1px 3px #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 42px;
+      margin-bottom: 20px;
+      animation: fadeInDown 1s ease;
+    }
+
+    .section {
+      width: 100%;
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      border: 2px solid #fff;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeInUp 1s ease;
+    }
+
+    .tool-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .tool {
+      display: inline-block;
+      width: 280px;
+      padding: 18px;
+      font-size: 22px;
+      text-align: center;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 2px solid #fff;
+      border-radius: 15px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(6px);
+    }
+
+    .tool:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.3);
+      color: #000;
+      border-color: #ddd;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 650px) {
+      .tool {
+        width: 90%;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="section">
+    <h1>学生工具箱</h1>
+    <div class="tool-container">
+      <a class="tool" href="AIassistant.html">💬 AI问答助手</a>
+      <a class="tool" href="documentSaver.html">📘 课程文件下载</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h1>教师工具箱</h1>
+    <div class="tool-container">
+      <a class="tool" href="course_editor.html">📄 课程安排编辑器</a>
+      <a class="tool" href="knowledge_editor.html">🔍 课程内容补充</a>
+    </div>
+  </div>
+
+</body>
+</html>

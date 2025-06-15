@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>课程内容补充</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html">⬅️ 返回首页</a>
+    <h2>📘 课程内容补充</h2>
+
+    <label for="experiment">🧪 选择实验：</label>
+    <select id="experiment">
+      <option value="" disabled selected>请选择一个实验</option>
+      <option value="double_prism">双棱镜</option>
+      <option value="youngs_modulus">杨氏模量</option>
+    </select>
+
+    <!-- ✅ 修改1：输入文件名 -->
+    <label for="filename">📄 PDF 文件名（可选）：</label>
+    <input type="text" id="filename" placeholder="不填则默认为 '内容补充'" />
+
+    <label>课程内容补充（支持图文）：</label>
+    <div id="content" contenteditable="true">
+      <h3>例：实验步骤说明</h3>
+      <p>在此输入教学步骤、图示说明等内容……</p>
+    </div>
+
+    <label for="user_id">👤 上传用户 ID：</label>
+    <input type="text" id="user_id" placeholder="请输入用户ID" />
+
+    <!-- ✅ 修改2：输入密码 -->
+    <label for="password">🔑 上传密码：</label>
+    <input type="password" id="password" placeholder="请输入上传密码" />
+
+    <button onclick="generateAndUploadPDF()">📤 导出 PDF 并上传</button>
+    <div id="status"></div>
+
+    <hr />
+
+    <!-- ✅ 修改3：直接上传文件端口 -->
+    <h3>📁 直接上传已有文件</h3>
+    <input type="file" id="direct_file" />
+    <button onclick="directUpload()">📤 上传文件</button>
+  </div>
+
+  <script>
+async function generateAndUploadPDF() {
+  const experiment = document.getElementById('experiment').value;
+  const filenameInput = document.getElementById('filename').value.trim();
+  const userId = document.getElementById('user_id').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const status = document.getElementById('status');
+  const content = document.getElementById('content');
+
+  if (!experiment) {
+    status.style.color = "red";
+    status.innerText = "❗ 请选择一个实验类型";
+    return;
+  }
+
+  if (!userId || !password) {
+    status.style.color = "red";
+    status.innerText = "❗ 请输入用户ID和密码";
+    return;
+  }
+
+  status.style.color = "black";
+  status.innerText = "⏳ 正在截图并生成 PDF...";
+
+  const pdfFileName = filenameInput || "内容补充";
+
+  try {
+    const canvas = await html2canvas(content, {
+      scale: 2,
+      useCORS: true
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    const imgWidth = 210; // A4宽度，mm
+    const pageHeight = 297; // A4高度，mm
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    let heightLeft = imgHeight;
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    let position = 0;
+
+    // 首页
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    // 分页
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    const blob = pdf.output('blob');
+
+    const formData = new FormData();
+    formData.append('file', new File([blob], pdfFileName + '.pdf', { type: 'application/pdf' }));
+    formData.append('user_id', userId);
+    formData.append('experiment', experiment);
+    formData.append('extra_notes', '');
+    formData.append('password', password);
+
+    status.innerText = "⏳ 正在上传到知识库...";
+
+    const res = await fetch('/upload-experiment', {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await res.json();
+    if (res.ok) {
+      status.style.color = "green";
+      status.innerText = result.message;
+    } else {
+      status.style.color = "red";
+      status.innerText = result.message || "❌ 上传失败";
+    }
+
+  } catch (err) {
+    status.style.color = "red";
+    status.innerText = "❌ 出错了：" + err.message;
+    console.error(err);
+  }
+}
+
+
+    async function directUpload() {
+      const fileInput = document.getElementById('direct_file');
+      const userId = document.getElementById('user_id').value.trim();
+      const experiment = document.getElementById('experiment').value;
+      const password = document.getElementById('password').value.trim();
+      const status = document.getElementById('status');
+
+      if (!fileInput.files.length) {
+        status.style.color = "red";
+        status.innerText = "❗ 请选择要上传的文件";
+        return;
+      }
+
+      if (!experiment || !userId || !password) {
+        status.style.color = "red";
+        status.innerText = "❗ 请选择实验并填写用户ID和密码";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+      formData.append('user_id', userId);
+      formData.append('experiment', experiment);
+      formData.append('extra_notes', '');
+      formData.append('password', password);
+
+      status.style.color = "black";
+      status.innerText = "⏳ 正在上传文件...";
+
+      try {
+        const res = await fetch('/upload-experiment', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await res.json();
+        if (res.ok) {
+          status.style.color = "green";
+          status.innerText = result.message;
+        } else {
+          status.style.color = "red";
+          status.innerText = result.message || "❌ 上传失败";
+        }
+      } catch (err) {
+        status.style.color = "red";
+        status.innerText = "❌ 上传出错：" + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
